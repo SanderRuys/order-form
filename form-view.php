@@ -7,9 +7,12 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css"
           rel="stylesheet"/>
-    <title>Your fancy store</title>
+    
+    <title>Finest wands since the world wide web</title>
+    
 </head>
 <body>
 <div class="container">
@@ -71,7 +74,7 @@
             <?php endforeach; ?>
         </fieldset>
 
-        <button type="submit" class="btn btn-primary">Order!</button>
+        <button type="submit" name="submit" class="btn btn-primary">Order!</button>
     </form>
 
     <footer>You already ordered <strong><?php echo $totalValue ?> Galleons</strong> in wands.</footer>
