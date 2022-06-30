@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 // We are going to use session variables so we need to enable sessions
 session_start();
+unset($_SESSION["listOfProducts"]);
 
 // Use this function when you need to need an overview of these variables
 function whatIsHappening() {
@@ -19,8 +20,10 @@ function whatIsHappening() {
     echo '</pre>';
    // echo '<h2>$_COOKIE</h2>';
    // var_dump($_COOKIE);
-    //echo '<h2>$_SESSION</h2>';
-    //var_dump($_SESSION);
+    echo '<h2>$_SESSION</h2>';
+    echo '<pre>';
+    var_dump($_SESSION);
+    echo '</pre>';
 }
 
 // TODO: provide some products (you may overwrite the example)
@@ -44,50 +47,69 @@ function validate()
     // TODO: This function will send a list of invalid fields back
     // array with all input 
 
+    $_SESSION["userInfo"] = $_POST;
+
     //check for errors of empty
 
     $result = [];
     foreach ($_POST as $i => $inputValue){
         // als email input leeg is
-        if (empty($inputValue) && $i === "email"){
-            //wordt achteraan in de array toegevoegd
-            $result[] = $i;
-            echo "email is empty <br>";
-        }
+        
         //als email niet geldig is
         //value van $i, $i is nu "email" en niet de inhoud van de input
-        elseif ($i === "email" && !filter_var($inputValue, FILTER_VALIDATE_EMAIL)){
-            $result[] = $i;
-            echo "email is not valid <br>";
-        }
-        //if street input is empty
-        elseif (empty($inputValue) && $i === "street") {
-           $result[] = $i;
-           echo "street is empty <br>";
-        }
-        //if streetnumber input is empty
-        elseif (empty($inputValue) && $i === "streetnumber"){
-            $result[] = $i;
-            echo "streetnumber is empty <br>";
-        }
-        //if city is empty
-        elseif (empty($inputValue) && $i === "city"){
-            $result[] = $i;
-            echo "city is empty <br>";
-        }
-        //if zipcode is empty
-        elseif (empty($inputValue) && $i === "zipcode"){
-            $result[] = $i;
-            echo "zipcode is empty <br>";
+       if ($i === "email" && !filter_var($inputValue, FILTER_VALIDATE_EMAIL)){
+            $result[] = ["name" => $i, "error" => "invalid email adress"];
+            //echo "email is not valid <br>";
         }
         //if zipcode is not a number
         elseif ($i === "zipcode" && !is_numeric($inputValue)){
-            $result[] = $i;
-            echo "zipcode is not a number";
+            $result[] = ["name" => $i, "error" => "invalid zipcode"];
+        }
+        //if street input is empty
+        elseif (empty($inputValue) ) {
+           $result[] = ["name" => $i, "error" => "empty field"];
+           
         }
     }
 
     return $result;
+}
+
+function bucketList($products){
+    echo  '<div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Congratulations, you succesfully ordered following wand(s):</h4>
+        <ul>';
+        foreach($_SESSION["listOfProducts"] as $key => $indexNumber) {
+            echo  '<li>';
+            echo $products[$indexNumber]["name"];
+            echo '</li>';
+        }
+    echo '</ul></div>';     
+}
+
+function listOfErrors($errors)
+{
+    echo '<div class="alert alert-danger" role="alert">
+    <ul>';
+    foreach($errors as $key => $error) {
+        echo '<li>';
+        echo $error['name']. ' - ' . $error["error"];
+        echo '</li>';
+    }
+    echo '</ul></div>';
+}
+
+function setAddress()
+{
+    $street = $_POST['street'];
+    $streetNumber = $_POST['streetnumber'];
+    $zipCode = $_POST['zipcode'];
+    $city = $_POST['city'];
+
+    echo '<ul>';
+    echo '<li>' . $street . ' number: ' . $streetNumber;
+    echo '<li>' . $zipCode . ' ' . $city;
+    echo '</ul>';
 }
 
 function handleForm($totalValue, $products)
@@ -101,27 +123,36 @@ function handleForm($totalValue, $products)
     if (!empty($invalidFields)) {
         // TODO: handle errors
         //wanneer er input in validate zit zijn er fouten
-        foreach($invalidFields as $invalid){
+        /*foreach($invalidFields as $invalid){
             echo '<div class="alert alert-danger" role="alert">'.$invalid.' is invalid or empty!</div>';
-        }
-        
+        }*/
+        listOfErrors($invalidFields);
     } else {
         // TODO: handle successful submission
         //handle orders here!! (step1)
+        
         //var_dump($_POST['products']);
-        echo "<h4>Congratulations, you succesfully ordered following wand(s):</h4><br>";
+        //echo "<h4>Congratulations, you succesfully ordered following wand(s):</h4><br>";
         foreach($_POST['products'] as $i => $product){
             //echo $products[$i]['name'];
+            //$_SESSION["listOfProducts"][] = ["product"=> $products[$i]['name'], "price"=> $products[$i]['price']];
+            $_SESSION["listOfProducts"][] = $i;
+            //$totalValue += $products[$i]['price'];
+            //$totalOrders[] = $products[$i]['name'];
+            //echo '<div class="alert alert-success" role="alert">'.$products[$i]['name'].'</div>';
+            }
             //echo $products[$i]['price']."<br>";
             //var_dump($products[$i]['price']);
-            $totalValue += $products[$i]['price'];
-            $totalOrders[] = $products[$i]['name'];
-            echo '<div class="alert alert-success" role="alert">'.$products[$i]['name'].'</div>';
-        }
+
+
+            bucketList($products);
+            
+        
        $_POST['totalValue'] = $totalValue;
-        echo "<h5>For a total price of: </h5><br>";
-        echo '<div class="alert alert-success" role="alert">€'.$totalValue.'</div>';
+        //echo "<h5>For a total price of: </h5><br>";
+        //echo '<div class="alert alert-success" role="alert">€'.$totalValue.'</div>';
         echo "<h5>It will be delivered by owl to the following adress: </h5><br>";
+        setAddress();
 
     }
     
@@ -130,11 +161,24 @@ function handleForm($totalValue, $products)
 // TODO: replace this if by an actual check
 //$formSubmitted = false;
 if (isset($_POST['submit'])) {
-   // whatIsHappening();
+    
+    //whatIsHappening();
     handleForm($totalValue, $products);
 }
+
+
+if (isset($_SESSION["listOfProducts"])){
+    foreach($_SESSION["listOfProducts"] as $key => $value) 
+    {
+        $price = $products[$value]["price"];
+        $totalValue += $price;      
+    }
+}
+
 
 //echo "<pre>";
 //print_r($_POST);
 //echo "</pre>";
+
+
 require 'form-view.php';

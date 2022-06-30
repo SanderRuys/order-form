@@ -30,11 +30,14 @@
         </ul>
     </nav>
     */ ?>
+
+    
+
     <form method="post">
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="email">E-mail:</label>
-                <input type="email" id="email" name="email" class="form-control"/>
+                <input type="email" id="email" name="email" value="<?php if($_SESSION['userInfo']){echo $_SESSION['userInfo']['email'];} ?>" class="form-control"/>
             </div>
             <div></div>
         </div>
@@ -45,21 +48,21 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="street">Street:</label>
-                    <input type="text" name="street" id="street" class="form-control">
+                    <input type="text" name="street" value="<?php if($_SESSION['userInfo']){echo $_SESSION['userInfo']['street'];} ?>" id="street" class="form-control">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="streetnumber">Street number:</label>
-                    <input type="text" id="streetnumber" name="streetnumber" class="form-control">
+                    <input type="text" id="streetnumber" name="streetnumber" value="<?php if($_SESSION['userInfo']){echo $_SESSION['userInfo']['streetnumber'];} ?>" class="form-control">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="city">City:</label>
-                    <input type="text" id="city" name="city" class="form-control">
+                    <input type="text" id="city" name="city" value="<?php if($_SESSION['userInfo']){echo $_SESSION['userInfo']['city'];} ?>" class="form-control">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="zipcode">Zipcode</label>
-                    <input type="text" id="zipcode" name="zipcode" class="form-control">
+                    <input type="text" id="zipcode" name="zipcode" value="<?php if($_SESSION['userInfo']){echo $_SESSION['userInfo']['zipcode'];} ?>" class="form-control">
                 </div>
             </div>
         </fieldset>
@@ -74,7 +77,7 @@
             <?php endforeach; ?>
         </fieldset>
 
-        <button type="submit" name="submit" class="btn btn-primary">Order!</button>
+        <button type="submit" name="submit" value="true" class="btn btn-primary">Order!</button>
     </form>
 
     <footer>You already ordered <strong><?php echo $totalValue ?> Galleons</strong> in wands.</footer>
